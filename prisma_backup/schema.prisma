@@ -1,0 +1,188 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ATTENDEE
+  ORGANIZER
+  ADMIN
+}
+
+enum EventStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+  CANCELLED
+}
+
+enum SeatStatus {
+  AVAILABLE
+  HELD
+  BOOKED
+}
+
+enum DiscountType {
+  PERCENT
+  FLAT
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum TicketStatus {
+  VALID
+  USED
+  CANCELLED
+}
+
+model User {
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  role         Role       @default(ATTENDEE)
+  createdAt    DateTime   @default(now())
+  
+  events       Event[]    @relation("OrganizerEvents")
+  bookings     Booking[]
+  seatHolds    SeatHold[]
+}
+
+model Event {
+  id          String      @id @default(uuid())
+  organizerId String
+  organizer   User        @relation("OrganizerEvents", fields: [organizerId], references: [id])
+  title       String
+  description String
+  category    String
+  city        String
+  venueName   String
+  address     String
+  startsAt    DateTime
+  endsAt      DateTime
+  bannerUrl   String?
+  status      EventStatus @default(DRAFT)
+  hasSeating  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+
+  ticketTypes TicketType[]
+  seats       Seat[]
+  seatHolds   SeatHold[]
+  promoCodes  PromoCode[]
+  bookings    Booking[]
+
+  @@index([city, startsAt, status])
+}
+
+model TicketType {
+  id         String     @id @default(uuid())
+  eventId    String
+  event      Event      @relation(fields: [eventId], references: [id])
+  name       String
+  pricePaise Int
+  quantity   Int
+  sold       Int        @default(0)
+  saleStart  DateTime
+  saleEnd    DateTime
+
+  seats      Seat[]
+  seatHolds  SeatHold[]
+  tickets    Ticket[]
+}
+
+model Seat {
+  id           String     @id @default(uuid())
+  eventId      String
+  event        Event      @relation(fields: [eventId], references: [id])
+  ticketTypeId String
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+  row          String
+  number       Int
+  label        String
+  status       SeatStatus @default(AVAILABLE)
+
+  tickets      Ticket[]
+
+  @@index([eventId, status])
+}
+
+model SeatHold {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  eventId      String
+  event        Event      @relation(fields: [eventId], references: [id])
+  seatIds      String[]
+  ticketTypeId String
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+  quantity     Int
+  expiresAt    DateTime
+}
+
+model PromoCode {
+  id           String       @id @default(uuid())
+  eventId      String?
+  event        Event?       @relation(fields: [eventId], references: [id])
+  code         String       @unique
+  discountType DiscountType
+  value        Int
+  maxUses      Int
+  used         Int          @default(0)
+  expiresAt    DateTime
+
+  bookings     Booking[]
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  eventId       String
+  event         Event         @relation(fields: [eventId], references: [id])
+  status        BookingStatus @default(PENDING)
+  totalPaise    Int
+  discountPaise Int           @default(0)
+  promoCodeId   String?
+  promoCode     PromoCode?    @relation(fields: [promoCodeId], references: [id])
+  createdAt     DateTime      @default(now())
+
+  tickets       Ticket[]
+  payments      Payment[]
+}
+
+model Ticket {
+  id           String       @id @default(uuid())
+  bookingId    String
+  booking      Booking      @relation(fields: [bookingId], references: [id])
+  ticketTypeId String
+  ticketType   TicketType   @relation(fields: [ticketTypeId], references: [id])
+  seatId       String?
+  seat         Seat?        @relation(fields: [seatId], references: [id])
+  qrToken      String       @unique
+  status       TicketStatus @default(VALID)
+  usedAt       DateTime?
+
+  @@index([qrToken])
+}
+
+model Payment {
+  id                String   @id @default(uuid())
+  bookingId         String
+  booking           Booking  @relation(fields: [bookingId], references: [id])
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  signature         String?
+  status            String
+  amountPaise       Int
+  createdAt         DateTime @default(now())
+}
