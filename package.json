@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma skills sync || exit 0"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -56,5 +56,12 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
+  },
+  "allowScripts": {
+    "@prisma/engines": true,
+    "bcrypt": true,
+    "esbuild": true,
+    "prisma": true,
+    "unrs-resolver": true
   }
 }

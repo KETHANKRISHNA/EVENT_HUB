@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EventHub
+
+EventHub is a modern event management and ticketing platform built with Next.js, Prisma, and PostgreSQL. It supports multi-role access for attendees, organizers, and managers, featuring manual UPI payments with UTR verification for ticket purchases.
+
+## Features
+
+- **Multi-Role System:** Secure access for Attendees, Organizers, and Managers.
+- **Event Management:** Create, edit, and publish events with custom ticketing tiers.
+- **Ticketing & Inventory:** Real-time seat holds and precise inventory tracking.
+- **Manual UPI Payments:** Built-in checkout flow allowing attendees to scan an organizer's UPI QR code and submit a UTR reference for manual verification.
+- **Manager Dashboard:** Tools for reviewing, approving, rejecting, and republishing events.
+- **Organizer Dashboard:** Track ticket sales, verify incoming UPI payments, and manage events.
+
+## Tech Stack
+
+- **Framework:** [Next.js 15+](https://nextjs.org/) (App Router, Server Actions)
+- **Database:** [PostgreSQL](https://www.postgresql.org/) (hosted on Supabase)
+- **ORM:** [Prisma](https://www.prisma.io/)
+- **UI:** [Tailwind CSS](https://tailwindcss.com/), [Radix UI](https://www.radix-ui.com/), and [shadcn/ui](https://ui.shadcn.com/)
+- **Authentication:** NextAuth.js
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository and install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Copy `.env.example` to `.env` and fill in your database credentials:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Database Migrations
+
+This project uses Prisma. To sync the database schema:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx prisma db push
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## License
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License.
