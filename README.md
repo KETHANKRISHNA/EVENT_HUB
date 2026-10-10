@@ -1,5 +1,11 @@
 # EventHub
 
+
+
+🚀 Live Demo: https://event-hub-psi-three.vercel.app/
+
+
+
 EventHub is a modern event management and ticketing platform built with Next.js, Prisma, and PostgreSQL. It supports multi-role access for attendees, organizers, and managers, featuring manual UPI payments with UTR verification for ticket purchases.
 
 ## Features
